@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Movies.Context;
 using Movies.Models;
+using Movies.Models.CustomModel;
 using System.Diagnostics;
 
 namespace Movies.Controllers
@@ -11,21 +13,20 @@ namespace Movies.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger,ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<GenreViewModel> genres = _context.genreViewModels.ToList();
-            SelectList genreSelectList = new SelectList(genres, "Id", "Name");
+            var model = new HomeViewModel
+            {
+                GenreList = await GetAllGenres()
+            };
+            return View(model);
 
-            ViewBag.GenreSelectList = genreSelectList;
-            var tuple = new Tuple<MoviesViewModel, GenreViewModel>(new MoviesViewModel(), new GenreViewModel());
-
-            return View(tuple);
         }
 
         public IActionResult Privacy()
@@ -39,16 +40,68 @@ namespace Movies.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-
-
         [HttpPost]
-        public ActionResult RegisterMovie(MoviesViewModel model, int selectedGenreId)
+        public async Task<ActionResult> RegisterMovie(HomeViewModel model)
         {
+            //Ignores these validation
+            ModelState.Remove("GenreList");
+            ModelState.Remove("Genre.Name");
+
             if (ModelState.IsValid)
             {
+                List<MoviesViewModel> validation = await GetAllAvailableMovies();
+                validation = validation.Where(v => v.Name == model.Movies.Name).ToList();
+                if(validation.Count > 0)
+                {
+                    model.ErrorMapping = 1; // Existing
+                    model.selectedGenreId = model.selectedGenreId;
+                    model.GenreList = await GetAllGenres();
+                    return View("Index", model);
+                }
+
+                var NewMoview = new MoviesViewModel
+                {
+                    Name = model.Movies.Name,
+                    Type = model.selectedGenreId,
+                    IsAvailanble = true
+                };
+
+                _context.moviesViewModels.Add(NewMoview);
+                await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View("Index",model);
+
+            model.selectedGenreId = -1;
+            model.GenreList = await GetAllGenres();
+            return View("Index", model);
+
+
+        }
+
+        private async Task<List<GenreViewModel>> GetAllGenres()
+        {
+            try
+            {
+                return await _context.genreViewModels.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAllGenresAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task<List<MoviesViewModel>> GetAllAvailableMovies()
+        {
+            try
+            {
+                return await _context.moviesViewModels.Where(m => m.IsAvailanble == true).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAllGenresAsync: {ex.Message}");
+                throw;
+            }
         }
 
 

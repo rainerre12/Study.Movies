@@ -1,5 +1,5 @@
-﻿@using Movies.Models
-@model Tuple<MoviesViewModel,GenreViewModel>
+﻿@using Movies.Models.CustomModel
+@model HomeViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -14,11 +14,33 @@
         @using (Html.BeginForm("RegisterMovie", "Home", FormMethod.Post))
         {
             <label>MovieName</label>
-            @Html.TextBoxFor(model => model.Item1.Name)
-            @Html.ValidationMessageFor(model => model.Item1.Name)
+            @Html.TextBoxFor(model => model.Movies.Name)
+
+            <div class="row">
+                @switch (Model.ErrorMapping)
+                {
+                    case 1:
+                        <label>Name Already Exist</label>
+                        break;
+                    default:
+                        @Html.ValidationMessageFor(model => model.Movies.Name)
+                        break;
+                }
+            </div>
 
             <label>Genre</label>
-            @Html.DropDownListFor(model => model.Item2.Id,(SelectList)ViewBag.GenreSelectList, "Select a genre")
+            @Html.DropDownListFor(model => model.selectedGenreId, 
+                new SelectList(Model.GenreList, "Id", "Name"), "Select a genre")
+            <div class="row">
+               @*  @Html.ValidationMessageFor(model => model.selectedGenreId) *@
+
+                @if(Model.selectedGenreId == -1)
+                {
+                    <label>Please Select a Genre</label>
+                }
+
+
+            </div>
 
 
             <button class="btn btn-success" type="submit">Register</button>
