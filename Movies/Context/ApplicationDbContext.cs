@@ -5,11 +5,14 @@ namespace Movies.Context
 {
     public class ApplicationDbContext : DbContext
     {
+
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContextOptions)
             : base(dbContextOptions)
         {
 
         }
+
 
         public DbSet<PersonsViewModel> personsViewModels { get; set; }
         public DbSet<MoviesViewModel> moviesViewModels { get; set; }
@@ -17,3 +20,5 @@ namespace Movies.Context
         public DbSet<PersonMovieMaps> PersonMovieMaps { get; set; }
     }
 }
+
+

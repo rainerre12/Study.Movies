@@ -12,11 +12,14 @@ namespace Movies.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
+        //AuthViewModel auth;
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
+            //auth = new AuthViewModel();
+            //string name = auth.getAuthName();
         }
 
         public async Task<IActionResult> Index()

@@ -7,7 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Styles\**" />
+    <Content Remove="wwwroot\Styles\**" />
+    <EmbeddedResource Remove="wwwroot\Styles\**" />
+    <None Remove="wwwroot\Styles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Models\SelectedGenre.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="package-lock.json" />
+    <Content Remove="package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="tailwind.config.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +37,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\Images\" />
+    <Folder Include="wwwroot\assets\scss\" />
+    <Folder Include="wwwroot\assets\vendors\" />
   </ItemGroup>
 
 </Project>
