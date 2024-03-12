@@ -21,7 +21,7 @@ namespace Movies.Models.CustomModel
         public int selectedGenreId { get; set; } = 0;
 
         public List<GenreViewModel> GenreList { get; set; }
-
+        public List<MoviesViewModel> MoviesList { get; set; }
 
         public int ErrorMapping { get; set; }
     }

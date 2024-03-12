@@ -1,6 +1,7 @@
 ﻿@using Movies.Models.CustomModel
 @model HomeViewModel
 
+
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -12,39 +13,137 @@
 
 <div class="row">
     <div class="col-md-5">
+
+        <a class="btn btn-success text-light" data-toggle="modal" data-target=".bootstrapmodal">Test</a>
+
+
+
+        @*
         @using (Html.BeginForm("RegisterMovie", "Home", FormMethod.Post))
         {
-            <label>MovieName</label>
-            @Html.TextBoxFor(model => model.Movies.Name)
+        <label>MovieName</label>
+        @Html.TextBoxFor(model => model.Movies.Name)
 
-            <div class="row">
-                @switch (Model.ErrorMapping)
-                {
-                    case 1:
-                        <label>Name Already Exist</label>
-                        break;
-                    default:
-                        @Html.ValidationMessageFor(model => model.Movies.Name)
-                        break;
-                }
-            </div>
-
-            <label>Genre</label>
-            @Html.DropDownListFor(model => model.selectedGenreId, 
-                new SelectList(Model.GenreList, "Id", "Name"), "Select a genre")
-            <div class="row">
-               @*  @Html.ValidationMessageFor(model => model.selectedGenreId) *@
-
-                @if(Model.selectedGenreId == -1)
-                {
-                    <label>Please Select a Genre</label>
-                }
-
-
-            </div>
-
-
-            <button class="btn btn-success" type="submit">Register</button>
+        <div class="row">
+        @switch (Model.ErrorMapping)
+        {
+        case 1:
+        <label>Name Already Exist</label>
+        break;
+        default:
+        @Html.ValidationMessageFor(model => model.Movies.Name)
+        break;
         }
+        </div>
+
+        <label>Genre</label>
+        @Html.DropDownListFor(model => model.selectedGenreId,
+        new SelectList(Model.GenreList, "Id", "Name"), "Select a genre")
+        <div class="row">
+
+        @if (Model.selectedGenreId == -1)
+        {
+        <label>Please Select a Genre</label>
+        }
+
+
+        </div>
+
+
+        <button class="btn btn-success" type="submit">Register</button>
+        } *@
     </div>
 </div>
+<div class="row">
+    <table class="table table-striped">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+        </tr>
+        @foreach (var d in Model.MoviesList)
+        {
+            <tr>
+                <td>@d.Id</td>
+                <td>@d.Name</td>
+            </tr>
+        }
+    </table>
+</div>
+
+
+
+@* MODAL *@
+<div class="modal fade bootstrapmodal">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Add Movies</h4>
+                    <div class="template-demo">
+
+                        @using (Html.BeginForm("RegisterMovie", "Home", FormMethod.Post, new { @class = "forms-sample" }))
+                        {
+                            <div class="form-group">
+                                <label for="Movies_Name">Movie Name</label>
+                                @Html.TextBoxFor(model => model.Movies.Name, new { @class = "form-control", id = "Movies_Name", placeholder = "Movie Name" })
+                                <div class="row">
+                                    @switch (Model.ErrorMapping)
+                                    {
+                                        case 1:
+                                            <label>Name Already Exists</label>
+                                            break;
+                                        default:
+                                            @Html.ValidationMessageFor(model => model.Movies.Name)
+                                            break;
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="selectedGenreId">Genre</label>
+                                @Html.DropDownListFor(model => model.selectedGenreId, new SelectList(Model.GenreList, "Id", "Name"), "Select a genre", new { @class = "form-control", id = "selectedGenreId" })
+                                <div class="row">
+                                    @if (Model.selectedGenreId == -1)
+                                    {
+                                        <label>Please Select a Genre</label>
+                                    }
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                            <button class="btn btn-light" data-dismiss="modal">Cancel</button>
+                        }
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@* <div class="col-md-4 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Block buttons</h4>
+            <p class="card-description">Add class <code>.btn-block</code></p>
+            <div class="template-demo">
+                <button type="button" class="btn btn-info btn-lg btn-block">
+                    Block buttons
+                    <i class="ti-menu float-right"></i>
+                </button>
+                <button type="button" class="btn btn-dark btn-lg btn-block">Block buttons</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block">
+                    <i class="ti-user"></i>
+                    Block buttons
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-lg btn-block">Block buttons</button>
+            </div>
+        </div>
+    </div>
+</div> *@

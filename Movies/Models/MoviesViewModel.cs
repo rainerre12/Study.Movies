@@ -10,5 +10,7 @@ namespace Movies.Models
         public string Name { get; set; }
         public int Type { get; set; }
         public bool IsAvailanble { get; set; }
+
+        public ICollection<PersonMovieMaps> PersonMovieMaps { get; set; }
     }
 }

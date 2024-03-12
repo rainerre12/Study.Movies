@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Movies.Context;
 using Movies.Models;
 using Movies.Models.CustomModel;
@@ -12,21 +13,19 @@ namespace Movies.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
-        //AuthViewModel auth;
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
-            //auth = new AuthViewModel();
-            //string name = auth.getAuthName();
         }
 
         public async Task<IActionResult> Index()
         {
             var model = new HomeViewModel
             {
-                GenreList = await GetAllGenres()
+                GenreList = await GetAllGenres(),
+                MoviesList = await GetAllAvailableMovies()
             };
             return View(model);
 
@@ -47,8 +46,7 @@ namespace Movies.Controllers
         public async Task<ActionResult> RegisterMovie(HomeViewModel model)
         {
             //Ignores these validation
-            ModelState.Remove("GenreList");
-            ModelState.Remove("Genre.Name");
+            RemovalofModelState(AppModels.Operations.addmovie);
 
             if (ModelState.IsValid)
             {
@@ -76,9 +74,8 @@ namespace Movies.Controllers
 
             model.selectedGenreId = -1;
             model.GenreList = await GetAllGenres();
+            model.MoviesList = await GetAllAvailableMovies();
             return View("Index", model);
-
-
         }
 
         private async Task<List<GenreViewModel>> GetAllGenres()
@@ -107,6 +104,19 @@ namespace Movies.Controllers
             }
         }
 
+        private void RemovalofModelState(int operation)
+        {
+            switch (operation)
+            {
+                case AppModels.Operations.addmovie:
 
+                    ModelState.Remove("Movies.PersonMovieMaps");
+                    ModelState.Remove("GenreList");
+                    ModelState.Remove("MoviesList");
+                    ModelState.Remove("Genre.Name");
+
+                    break;
+            }
+        }
     }
 }
