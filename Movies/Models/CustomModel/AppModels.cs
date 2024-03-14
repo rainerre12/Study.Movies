@@ -5,6 +5,7 @@
         public class Operations()
         {
             public const int addmovie = 1;
+            public const int addperson = 2;
         }
     }
 }

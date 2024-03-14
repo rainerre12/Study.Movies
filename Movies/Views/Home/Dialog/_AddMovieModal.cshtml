@@ -1,0 +1,44 @@
+﻿@using Movies.Models.CustomModel
+@model HomeViewModel
+
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title text-center">Add Movies</h4>
+        <div class="template-demo">
+
+            @using (Html.BeginForm("RegisterMovie", "Home", FormMethod.Post, new { @class = "forms-sample" }))
+            {
+                <div class="form-group">
+                    <label for="Movies_Name">Movie Name</label>
+                    @Html.TextBoxFor(model => model.Movies.Name, new { @class = "form-control", id = "Movies_Name", placeholder = "Movie Name" })
+                    <div class="row">
+                        @switch (Model.ErrorMapping)
+                        {
+                            case 1:
+                                <label>Name Already Exists</label>
+                                break;
+                            default:
+                                @Html.ValidationMessageFor(model => model.Movies.Name)
+                                break;
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectedGenreId">Genre</label>
+                    @Html.DropDownListFor(model => model.selectedGenreId, new SelectList(Model.GenreList, "Id", "Name"), "Select a genre", new { @class = "form-control", id = "selectedGenreId" })
+                    <div class="row">
+                        @if (Model.selectedGenreId == -1)
+                        {
+                            <label>Please Select a Genre</label>
+                        }
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-light" data-dismiss="modal">Cancel</button>
+            }
+        </div>
+    </div>
+</div>

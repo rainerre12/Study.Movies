@@ -11,10 +11,12 @@ namespace Movies.Models.CustomModel
         {
             Genre = new GenreViewModel();
             Movies = new MoviesViewModel();
+            Persons = new PersonsViewModel();
         }
 
         public GenreViewModel Genre { get; set; }
         public MoviesViewModel Movies { get; set; }
+        public PersonsViewModel Persons { get; set; }
 
 
         [Required(ErrorMessage = "Genre is required.")]
@@ -22,6 +24,7 @@ namespace Movies.Models.CustomModel
 
         public List<GenreViewModel> GenreList { get; set; }
         public List<MoviesViewModel> MoviesList { get; set; }
+        public List<PersonsViewModel> PersonsList { get; set; }
 
         public int ErrorMapping { get; set; }
     }

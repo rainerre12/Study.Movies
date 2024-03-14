@@ -20,26 +20,31 @@ namespace Movies.Controllers
             _context = context;
         }
 
+        #region Index 
+
         public async Task<IActionResult> Index()
         {
             var model = new HomeViewModel
             {
                 GenreList = await GetAllGenres(),
-                MoviesList = await GetAllAvailableMovies()
+                MoviesList = await GetAllAvailableMovies(),
+                PersonsList = await GetAllPersons()
+
             };
             return View(model);
 
         }
 
-        public IActionResult Privacy()
+        public IActionResult AddPersonClicked()
         {
-            return View();
+            return PartialView("~/Views/Home/Dialog/_AddPersonModal.cshtml");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public async Task<IActionResult> AddMovieClicked()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var model = new HomeViewModel();
+            model.GenreList = await GetAllGenres();
+            return PartialView("~/Views/Home/Dialog/_AddMovieModal.cshtml", model);
         }
 
         [HttpPost]
@@ -52,11 +57,12 @@ namespace Movies.Controllers
             {
                 List<MoviesViewModel> validation = await GetAllAvailableMovies();
                 validation = validation.Where(v => v.Name == model.Movies.Name).ToList();
-                if(validation.Count > 0)
+                if (validation.Count > 0)
                 {
                     model.ErrorMapping = 1; // Existing
                     model.selectedGenreId = model.selectedGenreId;
                     model.GenreList = await GetAllGenres();
+                    model.MoviesList = await GetAllAvailableMovies();
                     return View("Index", model);
                 }
 
@@ -77,6 +83,29 @@ namespace Movies.Controllers
             model.MoviesList = await GetAllAvailableMovies();
             return View("Index", model);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> RegisterPerson(HomeViewModel model)
+        {
+            //Ignores these validation
+            RemovalofModelState(AppModels.Operations.addperson);
+            if (ModelState.IsValid)
+            {
+                var NewPerson = new PersonsViewModel
+                {
+                    FirstName = model.Persons.FirstName,
+                    LastName = model.Persons.LastName,
+                    IsActive = true
+                };
+
+                _context.personsViewModels.Add(NewPerson);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+            return View("Index", model);
+        }
+
 
         private async Task<List<GenreViewModel>> GetAllGenres()
         {
@@ -104,19 +133,63 @@ namespace Movies.Controllers
             }
         }
 
+
+        private async Task<List<PersonsViewModel>> GetAllPersons()
+        {
+            try
+            {
+                return await _context.personsViewModels.OrderBy(p => p.IsActive).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAllGenresAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+
         private void RemovalofModelState(int operation)
         {
+            var invalidFields = ModelState.Where(x => x.Value.Errors.Any())
+                    .ToDictionary(x => x.Key, x => x.Value.Errors.Select(e => e.ErrorMessage).ToList());
             switch (operation)
             {
+
                 case AppModels.Operations.addmovie:
 
-                    ModelState.Remove("Movies.PersonMovieMaps");
-                    ModelState.Remove("GenreList");
-                    ModelState.Remove("MoviesList");
-                    ModelState.Remove("Genre.Name");
+                    foreach (var entry in invalidFields)
+                    {
+                        string FieldName = entry.Key;
+                        ModelState.Remove(FieldName);
+                    }
+                    break;
+                case AppModels.Operations.addperson:
 
+                    foreach (var entry in invalidFields)
+                    {
+                        string FieldName = entry.Key;
+                        ModelState.Remove(FieldName);
+                    }
                     break;
             }
+        }
+
+        #endregion
+
+        #region Privacy 
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+
+        #endregion
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
