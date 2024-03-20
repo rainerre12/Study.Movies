@@ -85,25 +85,48 @@ namespace Movies.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> RegisterPerson(HomeViewModel model)
+        public async Task<ActionResult> RegisterPerson([FromBody] HomeViewModel model)
         {
             //Ignores these validation
-            RemovalofModelState(AppModels.Operations.addperson);
-            if (ModelState.IsValid)
+            //RemovalofModelState(AppModels.Operations.addperson);
+            //if (ModelState.IsValid)
+            //{
+            //    var NewPerson = new PersonsViewModel
+            //    {
+            //        FirstName = model.Persons.FirstName,
+            //        LastName = model.Persons.LastName,
+            //        IsActive = true
+            //    };
+
+            //    _context.personsViewModels.Add(NewPerson);
+            //    await _context.SaveChangesAsync();
+
+            //    return RedirectToAction("Index");
+            //}
+            //return View("Index", model);
+
+
+
+            var existingPerson = await _context.personsViewModels.FirstOrDefaultAsync(p =>
+                p.FirstName == model.Persons.FirstName && p.LastName == model.Persons.LastName);
+
+            if (existingPerson != null)
             {
-                var NewPerson = new PersonsViewModel
-                {
-                    FirstName = model.Persons.FirstName,
-                    LastName = model.Persons.LastName,
-                    IsActive = true
-                };
-
-                _context.personsViewModels.Add(NewPerson);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index");
+                // Handle case where person already exists
+                ModelState.AddModelError(string.Empty, "Person with the same name already exists.");
+                return BadRequest();
             }
-            return View("Index", model);
+
+            var NewPerson = new PersonsViewModel
+            {
+                FirstName = model.Persons.FirstName,
+                LastName = model.Persons.LastName,
+                IsActive = true
+            };
+            _context.personsViewModels.Add(NewPerson);
+            await _context.SaveChangesAsync();
+            return Ok();
+            //return RedirectToAction("Index");
         }
 
 

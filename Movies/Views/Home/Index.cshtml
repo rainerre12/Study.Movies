@@ -4,6 +4,8 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    // string addPersonUrl = Url.Action("AddPersonClicked", "Home");
+    // string addMovieUrl = Url.Action("AddMovieClicked", "Home");
 }
 <div class="row">
     <div class="col-lg-6 grid-margin stretch-card">
@@ -13,7 +15,6 @@
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            @*<a class="btn btn-success text-light w-100" data-toggle="modal" data-target=".bootstrapmodal">Add Person</a> <!-- Added w-100 class to make the button full width -->*@
                             <button class="btn btn-success text-light w-100" data-toggle="modal" data-target="#movieModal" data-modal-type="add-person">Add Persons</button>
                         </div>
                     </div>
@@ -65,7 +66,6 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-md-4">
-                        @* <a class="btn btn-success text-light w-100" data-toggle="modal" data-target=".bootstrapmodal">Add Movies</a>  *@
                         <button class="btn btn-success text-light w-100" data-toggle="modal" data-target="#movieModal" data-modal-type="add-movie">Add Movies</button>
                     </div>
                 </div>
@@ -103,17 +103,21 @@
 
 
 @* MODAL *@
-<div class="modal fade" id="movieModal" tabindex="-1" role="dialog" aria-labelledby="movieModalLabel" aria-hidden="true">
+<div class="modal fade" id="movieModal" tabindex="-1" role="dialog" aria-labelledby="movieModalLabel" aria-hidden="true"
+       @* data-add-person-url ="@addPersonUrl" data-add-moview-url="@addMovieUrl" *@>
     <div class="modal-dialog" role="document">
         <div class="modal-content" id="modalContent">
         </div>
     </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Then include your script -->
 <script>
+    console.log('Sulod')
     $(document).ready(function () {
         $('#movieModal').on('show.bs.modal', function (event) {
+            console.log('Sulod napud')
             var button = $(event.relatedTarget);
             var modalType = button.data('modal-type');
 
